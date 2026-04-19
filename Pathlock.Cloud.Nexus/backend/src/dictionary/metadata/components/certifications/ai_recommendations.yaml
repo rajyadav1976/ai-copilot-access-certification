@@ -1,0 +1,236 @@
+name: AI Recommendations
+description: |
+  AI-generated recommendation data for certification review items.
+  Stores risk analysis, decision suggestions, confidence scores, and anomaly detection results.
+
+entities:
+  AIRecommendations:
+    type: table
+    label: AI Recommendations
+    refDisplay:
+      component: IconLabel
+      parameters:
+        label: Decision
+    fields:
+      - name: SysId
+        key: true
+        type: uuid
+        label: ID
+        description: Unique identifier for the AI recommendation
+        filterable: false
+        sortable: false
+        visible: false
+
+      - name: CertificationProcessId
+        type: number
+        required: true
+        label: Campaign ID
+        description: Certification process ID
+        filterable: true
+        sortable: true
+
+      - name: ReviewItemStepId
+        type: number
+        required: true
+        label: Review Item
+        description: The workflow instance step ID for the review item
+        filterable: true
+        sortable: true
+
+      - name: UserId
+        type: number
+        label: User ID
+        description: The employee user ID being reviewed
+        filterable: true
+        sortable: false
+        visible: false
+
+      - name: RoleId
+        type: number
+        label: Role ID
+        description: The role ID under review
+        filterable: true
+        sortable: false
+        visible: false
+
+      - name: Decision
+        type: string
+        required: true
+        label: AI Decision
+        description: "AI recommendation: Approve, Reject, or NeedsReview"
+        maxLength: 20
+        filterable: true
+        sortable: true
+        variant: badge
+        color: gray
+        additionalProps:
+          colorMap:
+            Approve: green
+            Reject: red
+            NeedsReview: orange
+
+      - name: ConfidenceScore
+        type: number
+        required: true
+        label: Confidence
+        description: Confidence score from 0.0 to 1.0
+        filterable: true
+        sortable: true
+        variant: badge
+        color: gray
+        additionalProps:
+          unit: ""
+          minimumFractionDigits: 2
+          maximumFractionDigits: 4
+
+      - name: RiskLevel
+        type: string
+        required: true
+        label: Risk Level
+        description: "Risk classification: Low, Medium, High, Critical"
+        maxLength: 20
+        filterable: true
+        sortable: true
+        variant: badge
+        color: gray
+        additionalProps:
+          colorMap:
+            Low: green
+            Medium: orange
+            High: red
+            Critical: red
+
+      - name: RiskSummary
+        type: string
+        label: Risk Summary
+        description: LLM-generated explanation of the recommendation rationale
+        filterable: false
+        sortable: false
+
+      - name: RiskFactors
+        type: string
+        label: Risk Factors
+        description: JSON array of identified risk factors
+        filterable: false
+        sortable: false
+        visible: false
+
+      - name: UsagePercentage
+        type: number
+        label: Usage %
+        description: Role usage percentage at time of analysis
+        filterable: true
+        sortable: true
+
+      - name: DaysSinceLastUsed
+        type: number
+        label: Days Unused
+        description: Number of days since last usage
+        filterable: true
+        sortable: true
+
+      - name: HasSodViolation
+        type: boolean
+        label: SoD Violation
+        description: Whether an SoD violation was detected
+        trueLabel: "Yes"
+        falseLabel: "No"
+        filterable: true
+        sortable: true
+
+      - name: PeerUsagePercent
+        type: number
+        label: Peer Usage %
+        description: Percentage of peers with the same role
+        filterable: true
+        sortable: true
+
+      - name: IsAnomaly
+        type: boolean
+        label: Anomaly
+        description: Whether the role assignment was flagged as anomalous
+        trueLabel: "Anomaly"
+        falseLabel: "Normal"
+        filterable: true
+        sortable: true
+
+      - name: AnomalyScore
+        type: number
+        label: Anomaly Score
+        description: "Anomaly score: 0=normal, 1=highly anomalous"
+        filterable: false
+        sortable: true
+        visible: false
+
+      - name: Status
+        type: string
+        required: true
+        label: Status
+        description: "Status: Pending, Generated, Failed, Expired"
+        maxLength: 20
+        filterable: true
+        sortable: true
+        variant: badge
+        color: gray
+        additionalProps:
+          colorMap:
+            Pending: blue
+            Generated: green
+            Failed: red
+            Expired: gray
+
+      - name: GeneratedAt
+        type: datetime
+        label: Generated At
+        description: When the recommendation was generated
+        filterable: true
+        sortable: true
+        showTime: true
+
+      - name: ModelVersion
+        type: string
+        label: Model Version
+        description: Version of the AI model used
+        maxLength: 50
+        filterable: false
+        sortable: false
+        visible: false
+
+listViews:
+  AIRecommendationsList:
+    label: AI Recommendations
+    entity: AIRecommendations
+    default: true
+    fields:
+      - { name: ReviewItemStepId, label: Step ID, columnWidth: 100 }
+      - { name: Decision, label: AI Decision, columnWidth: 150 }
+      - { name: ConfidenceScore, label: Confidence, columnWidth: 120 }
+      - { name: RiskLevel, label: Risk, columnWidth: 120 }
+      - { name: RiskSummary, label: Summary, columnWidth: 400 }
+      - { name: UsagePercentage, label: Usage %, columnWidth: 100 }
+      - { name: HasSodViolation, label: SoD, columnWidth: 80 }
+      - { name: IsAnomaly, label: Anomaly, columnWidth: 100 }
+      - { name: Status, label: Status, columnWidth: 100 }
+    sort:
+      - "ConfidenceScore asc"
+
+  HighRiskItems:
+    entity: AIRecommendations
+    type: filterOnly
+    label: High Risk
+    description: Items with high or critical risk level
+    filter: RiskLevel eq 'High' or RiskLevel eq 'Critical'
+
+  RecommendedReject:
+    entity: AIRecommendations
+    type: filterOnly
+    label: Recommended Reject
+    description: Items recommended for rejection
+    filter: Decision eq 'Reject'
+
+  Anomalies:
+    entity: AIRecommendations
+    type: filterOnly
+    label: Anomalies
+    description: Items flagged as anomalous
+    filter: IsAnomaly eq true
