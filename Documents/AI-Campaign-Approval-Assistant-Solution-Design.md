@@ -417,7 +417,7 @@ LEFT JOIN dbo.AIRoleDepartmentBaselines bl
 
 Following the existing migration naming convention (`{yyyyMMddHHmmss}_{Name}.cs`):
 
-**File:** `Pathlock.Cloud.Nexus/backend/src/Pathlock.Cloud.Migrations/Migrations/{timestamp}_AddAIRecommendationTables.cs`
+**File:** `AI.Copilot.Access.Certification/backend/src/AI.Copilot.Access.Certification.Migrations/Migrations/{timestamp}_AddAIRecommendationTables.cs`
 
 ```csharp
 public partial class AddAIRecommendationTables : Migration
@@ -479,15 +479,15 @@ public partial class AddAIRecommendationTables : Migration
 
 #### `AIRecommendation.cs`
 
-**File:** `Pathlock.Cloud.Nexus/backend/src/Pathlock.Cloud.Shared/Entities/Components/AI/AIRecommendation.cs`
+**File:** `AI.Copilot.Access.Certification/backend/src/AI.Copilot.Access.Certification.Shared/Entities/Components/AI/AIRecommendation.cs`
 
 ```csharp
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Pathlock.Cloud.Shared.Entities.Components.Certifications;
-using Pathlock.Cloud.Shared.Platform.TableApi;
+using AI.Copilot.Access.Certification.Shared.Entities.Components.Certifications;
+using AI.Copilot.Access.Certification.Shared.Platform.TableApi;
 
-namespace Pathlock.Cloud.Shared.Entities.Components.AI;
+namespace AI.Copilot.Access.Certification.Shared.Entities.Components.AI;
 
 [DbEntity]
 [Table("AIRecommendations")]
@@ -626,7 +626,7 @@ public class AIRecommendation : IApproverFiltered
 #### 6.2.1 `IDataContextAggregator`
 
 ```csharp
-namespace Pathlock.Cloud.Services.AI;
+namespace AI.Copilot.Access.Certification.Services.AI;
 
 public interface IDataContextAggregator
 {
@@ -688,7 +688,7 @@ public class ReviewItemContext
 #### 6.2.2 `ILlmGateway`
 
 ```csharp
-namespace Pathlock.Cloud.Services.AI;
+namespace AI.Copilot.Access.Certification.Services.AI;
 
 public interface ILlmGateway
 {
@@ -717,7 +717,7 @@ public class LlmRecommendationResult
 #### 6.2.3 `IAnomalyDetector`
 
 ```csharp
-namespace Pathlock.Cloud.Services.AI;
+namespace AI.Copilot.Access.Certification.Services.AI;
 
 public interface IAnomalyDetector
 {
@@ -754,7 +754,7 @@ public class AnomalyResult
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace Pathlock.Cloud.Services.AI;
+namespace AI.Copilot.Access.Certification.Services.AI;
 
 public class AzureOpenAILlmGateway : ILlmGateway
 {
@@ -851,7 +851,7 @@ public class AzureOpenAILlmGateway : ILlmGateway
 ### 6.4 Configuration
 
 ```csharp
-namespace Pathlock.Cloud.Services.AI;
+namespace AI.Copilot.Access.Certification.Services.AI;
 
 public class AIServiceSettings
 {
@@ -934,14 +934,14 @@ services.AddSingleton<IAIRecommendationService, AIRecommendationService>();
 
 Triggered when a campaign is created or when an admin manually requests AI analysis.
 
-**File:** `Pathlock.Cloud.Nexus/backend/src/Pathlock.Cloud.Worker/App/AI/AIGenerateRecommendationsHandler.cs`
+**File:** `AI.Copilot.Access.Certification/backend/src/AI.Copilot.Access.Certification.Worker/App/AI/AIGenerateRecommendationsHandler.cs`
 
 ```csharp
-using Pathlock.Cloud.Services.AI;
-using Pathlock.Cloud.Shared.Legacy.Messaging;
-using Pathlock.Cloud.Worker.Attributes;
+using AI.Copilot.Access.Certification.Services.AI;
+using AI.Copilot.Access.Certification.Shared.Legacy.Messaging;
+using AI.Copilot.Access.Certification.Worker.Attributes;
 
-namespace Pathlock.Cloud.Worker.App.AI;
+namespace AI.Copilot.Access.Certification.Worker.App.AI;
 
 [WorkerMessageHandler]
 public class AIGenerateRecommendationsHandler
@@ -989,7 +989,7 @@ public class AIGenerateRecommendationsHandler
 **Message definition:**
 
 ```csharp
-namespace Pathlock.Cloud.Shared.Legacy.Messaging.Messages.AI;
+namespace AI.Copilot.Access.Certification.Shared.Legacy.Messaging.Messages.AI;
 
 public class AIGenerateRecommendationsMessage : BaseMessage
 {
@@ -1050,13 +1050,13 @@ private static void QueueAIRecommendationGeneration(long certificationProcessId)
 
 ### 7.3 AI Recommendation API Endpoints
 
-**File:** `Pathlock.Cloud.Nexus/backend/src/Pathlock.Cloud.Api/Controllers/AIRecommendationController.cs`
+**File:** `AI.Copilot.Access.Certification/backend/src/AI.Copilot.Access.Certification.Api/Controllers/AIRecommendationController.cs`
 
 ```csharp
 using Microsoft.AspNetCore.Mvc;
-using Pathlock.Cloud.Services.AI;
+using AI.Copilot.Access.Certification.Services.AI;
 
-namespace Pathlock.Cloud.Api.Controllers;
+namespace AI.Copilot.Access.Certification.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/ai")]
@@ -1131,15 +1131,15 @@ public class AIRecommendationController : ControllerBase
 
 For the `AIRecommendations` table to appear in the generic Table API alongside `ReviewItems`:
 
-**File:** `Pathlock.Cloud.Nexus/backend/src/Pathlock.Cloud.Components/Certification/AIRecommendationRepository.cs`
+**File:** `AI.Copilot.Access.Certification/backend/src/AI.Copilot.Access.Certification.Components/Certification/AIRecommendationRepository.cs`
 
 ```csharp
-using Pathlock.Cloud.Shared.Entities.Components.AI;
-using Pathlock.Cloud.Shared.Platform.Components;
-using Pathlock.Cloud.Shared.Platform.Session;
-using Pathlock.Cloud.Shared.Platform.TableApi;
+using AI.Copilot.Access.Certification.Shared.Entities.Components.AI;
+using AI.Copilot.Access.Certification.Shared.Platform.Components;
+using AI.Copilot.Access.Certification.Shared.Platform.Session;
+using AI.Copilot.Access.Certification.Shared.Platform.TableApi;
 
-namespace Pathlock.Cloud.Components.Certification;
+namespace AI.Copilot.Access.Certification.Components.Certification;
 
 public interface IAIRecommendationRepository : IRepository<AIRecommendation> { }
 
@@ -1268,7 +1268,7 @@ formViews:
 
 #### 8.1.2 New React Component — `AiCampaignInsightsPanel`
 
-**File:** `Pathlock.Cloud.Nexus/frontend/src/applications/portal/components/AiCampaignInsightsPanel.tsx`
+**File:** `AI.Copilot.Access.Certification/frontend/src/applications/portal/components/AiCampaignInsightsPanel.tsx`
 
 ```tsx
 import React from 'react';
@@ -1385,7 +1385,7 @@ export function AiCampaignInsightsPanel({ certificationId }: Props) {
 
 Inline badge for each row in the ReviewItems grid:
 
-**File:** `Pathlock.Cloud.Nexus/frontend/src/applications/portal/components/AiRecommendationBadge.tsx`
+**File:** `AI.Copilot.Access.Certification/frontend/src/applications/portal/components/AiRecommendationBadge.tsx`
 
 ```tsx
 import React from 'react';
