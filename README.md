@@ -36,6 +36,8 @@ The result is a system that prioritizes human attention where it matters most.
 
 ## System Architecture
 
+![AI-Copilot Access Certification Architecture](AI-Copilot%20Access%20Certification%20Architecture.jpg)
+
 The solution follows a three-tier architecture:
 
 Frontend: React + TypeScript with optimized data fetching and caching  
